@@ -7,6 +7,7 @@ using UnityEngine;
 public class Anim//游戏控制动画
 {
   public AnimationClip idle;
+  public AnimationClip jump;
   public AnimationClip runForward;
   public AnimationClip runBackward;
   public AnimationClip runRight;
@@ -27,7 +28,12 @@ public class KnightMove : MonoBehaviour
   //分配变量,
   private Transform tr;
   //移动速度变量
-  public float movespeed = 10.0f;
+  public float movespeed = 0.1f;
+
+  // 跳跃速度变量
+  public float jumpspeed = 10.0f;
+  private bool isJumpFlag = false;
+  public float jumpMargin = 1f;
   //旋转可使用Rotate函数，
   public float rotSpeed = 100.0f;
   //要显示到检视视图的动画类变量
@@ -50,17 +56,25 @@ public class KnightMove : MonoBehaviour
 
   }
 
+  private void OnCollisionEnter(Collision col)  // 碰撞检测
+  {
+    if (col.gameObject.tag == "Ground")  // 地面的标签(tag) 是 “Ground”
+    {
+      isJumpFlag = false;
+    }
+  }
+
   // Update is called once per frame
   void Update()
   {
+
 
     h = Input.GetAxis("Horizontal");
     v = Input.GetAxis("Vertical");
 
 
-    Debug.Log("H=" + h.ToString());
-    Debug.Log("V=" + v.ToString());
-
+    // Debug.Log("H=" + h.ToString());
+    // Debug.Log("V=" + v.ToString());
 
     //计算左右前后的移动方向向量。
     Vector3 moveDir = (Vector3.forward * v) + (Vector3.right * h);
@@ -74,25 +88,56 @@ public class KnightMove : MonoBehaviour
     tr.Rotate(Vector3.up * Time.deltaTime * rotSpeed * Input.GetAxis("Mouse X"));
 
 
+
+    //以键盘输入值为基准，执行要操作的动画
+
     if (v >= 0.1f)
     {
       //前进动画
-      _animation.CrossFade(anim.runForward.name, 0.3f);
+      if (isJumpFlag)
+      {
+        _animation.CrossFade(anim.jump.name, 0.3f);
+      }
+      else
+      {
+        _animation.CrossFade(anim.runForward.name, 0.3f);
+      }
     }
     else if (v <= -0.1f)
     {
       //back animation
-      _animation.CrossFade(anim.runBackward.name, 0.3f);
+      if (isJumpFlag)
+      {
+        _animation.CrossFade(anim.jump.name, 0.3f);
+      }
+      else
+      {
+        _animation.CrossFade(anim.runBackward.name, 0.3f);
+      }
     }
     else if (h >= 0.1f)
     {
       //right animation
-      _animation.CrossFade(anim.runRight.name, 0.3f);
+      if (isJumpFlag)
+      {
+        _animation.CrossFade(anim.jump.name, 0.3f);
+      }
+      else
+      {
+        _animation.CrossFade(anim.runRight.name, 0.3f);
+      }
     }
     else if (h <= -0.1f)
     {
       //left animation 
-      _animation.CrossFade(anim.runleft.name, 0.3f);
+      if (isJumpFlag)
+      {
+        _animation.CrossFade(anim.jump.name, 0.3f);
+      }
+      else
+      {
+        _animation.CrossFade(anim.runleft.name, 0.3f);
+      }
     }
     else
     {
@@ -100,13 +145,23 @@ public class KnightMove : MonoBehaviour
     }
 
 
-    //以键盘输入值为基准，执行要操作的动画
-    if (Input.GetKey(KeyCode.Backspace))
+
+
+    if (Input.GetKey(KeyCode.Space))
     {
-      _animation.CrossFade(anim.idle.name, 0.3f);
+      if (!isJumpFlag)
+      {
+        if (this.gameObject.GetComponent<Rigidbody>() == null)
+        {
+          this.gameObject.AddComponent<Rigidbody>();
+        }
+        isJumpFlag = true;
+        this.gameObject.GetComponent<Rigidbody>().AddForce(Vector3.up * jumpspeed * Time.deltaTime, ForceMode.VelocityChange);
+      }
     }
 
-    if (Input.GetKey(KeyCode.J))
+
+    if (Input.GetKey(KeyCode.J) || Input.GetMouseButton(0))
     {
       _animation.CrossFade(anim.attackStrength.name, 0.3f);
     }
@@ -116,7 +171,7 @@ public class KnightMove : MonoBehaviour
       _animation.CrossFade(anim.attackQuick.name, 0.3f);
     }
 
-    if (Input.GetKey(KeyCode.L))
+    if (Input.GetKey(KeyCode.L) || Input.GetMouseButton(1))
     {
       _animation.CrossFade(anim.defend.name, 0.3f);
     }
