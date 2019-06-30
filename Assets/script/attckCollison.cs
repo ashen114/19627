@@ -9,6 +9,8 @@ public class attckCollison : MonoBehaviour
   private TextMesh scoreMesh;
 
   private string scoreText;
+
+  public AudioClip AudioEnemyGone;
   private float score = 0.0f;
 
   private void Start()
@@ -48,7 +50,7 @@ public class attckCollison : MonoBehaviour
 
   private void OnCollisionEnter(Collision col)  // 碰撞检测
   {
-    if (col.gameObject.tag == "enemy")  // 地面的标签(tag) 是 “Ground”
+    if (col.gameObject.tag == "enemy" && attackClick.isFight)  // 地面的标签(tag) 是 “Ground”
     {
       scoreHero.score = scoreHero.score + 1;
       scoreText = "斩杀BUG数:" + scoreHero.score;
@@ -56,7 +58,13 @@ public class attckCollison : MonoBehaviour
 
       col.gameObject.GetComponent<MeshRenderer>().material.color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), (0.1f * Time.deltaTime));
       GameObject.Destroy(col.gameObject, 0.1f);
+      AudioSource.PlayClipAtPoint(AudioEnemyGone, col.gameObject.transform.position);
       createOne();
     }
   }
+
+  // private void ObjectGone(Collision col)
+  // {
+  //   GameObject.Destroy(col.gameObject);
+  // }
 }

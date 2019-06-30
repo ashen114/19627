@@ -1,9 +1,10 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class emptyCopy : MonoBehaviour
+public class PlayerScource : MonoBehaviour
 {
+  public static AudioClip audioAttackStrength;
   private void Awake()
   {
 
@@ -11,7 +12,6 @@ public class emptyCopy : MonoBehaviour
 
   private void Start()
   {
-
   }
 
   private void Update()

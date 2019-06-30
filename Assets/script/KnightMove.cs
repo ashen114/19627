@@ -21,9 +21,9 @@ public class Anim//游戏控制动画
   public AnimationClip hit;
 }
 
-
 public class KnightMove : MonoBehaviour
 {
+
 
   public SimpleTouchController leftController;
   public SimpleTouchController rightController;
@@ -39,6 +39,8 @@ public class KnightMove : MonoBehaviour
   public float jumpspeed = 150.0f;
   private bool isJumpFlag = false;
   public float jumpMargin = 1f;
+
+  public AudioClip AudioPlayerJump;
   //旋转可使用Rotate函数，
   public float rotSpeed = 100.0f;
   //要显示到检视视图的动画类变量
@@ -58,6 +60,9 @@ public class KnightMove : MonoBehaviour
 
     _animation.clip = anim.idle;
     _animation.Play();
+
+
+    // this.gameObject.GetComponent<AudioSource>().clip = anim.audioAttackStrength;
 
   }
 
@@ -191,20 +196,22 @@ public class KnightMove : MonoBehaviour
       _animation.CrossFade(anim.idle.name, 0.3f);
     }
 
-
-
-
     // if (Input.GetKey(KeyCode.Space))
     if (jumpClick.isJump)
     {
       if (!isJumpFlag)
       {
-        if (this.gameObject.GetComponent<Rigidbody>() == null)
-        {
-          this.gameObject.AddComponent<Rigidbody>();
-        }
+        // if (this.gameObject.GetComponent<Rigidbody>() == null)
+        // {
+        //   this.gameObject.AddComponent<Rigidbody>();
+        // }
         isJumpFlag = true;
         jumpClick.isJump = false;
+        // this.gameObject.GetComponent<AudioSource>().clip = AudioPlayerJump;
+        // this.gameObject.GetComponent<AudioSource>().volume = 0.2f;
+        // this.gameObject.GetComponent<AudioSource>().Play();
+        AudioSource.PlayClipAtPoint(AudioPlayerJump, transform.position);
+        // tr.Translate(Vector3.up * jumpspeed * Time.deltaTime);
         this.gameObject.GetComponent<Rigidbody>().AddForce(Vector3.up * jumpspeed * Time.deltaTime, ForceMode.VelocityChange);
       }
     }
@@ -214,8 +221,9 @@ public class KnightMove : MonoBehaviour
     // if (Input.GetKey(KeyCode.J))
     if (attackClick.isFight)
     {
-      Invoke("stopFight", 0.3f);
       _animation.Play(anim.attackStrength.name);
+      Invoke("stopFight", 0.3f);
+      // _animation.CrossFade(anim.attackStrength.name, 0.3f);
     }
 
     if (Input.GetKey(KeyCode.K))
