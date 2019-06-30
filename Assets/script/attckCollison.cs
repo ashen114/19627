@@ -39,7 +39,7 @@ public class attckCollison : MonoBehaviour
     }
     GameObject newOne = GameObject.CreatePrimitive(newObjetctType);
     newOne.transform.position = new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5));
-    newOne.name = "enemyObject";
+    newOne.name = "enemyObject" + scoreHero.score;
     newOne.tag = "enemy";
     newOne.GetComponent<MeshRenderer>().material.color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 0.5f));
     newOne.AddComponent<Rigidbody>();
@@ -55,7 +55,7 @@ public class attckCollison : MonoBehaviour
       scoreMesh.text = scoreText;
 
       col.gameObject.GetComponent<MeshRenderer>().material.color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), (0.1f * Time.deltaTime));
-      GameObject.Destroy(col.gameObject, 0.5f);
+      GameObject.Destroy(col.gameObject, 0.1f);
       createOne();
     }
   }

@@ -9,6 +9,7 @@ public class Anim//游戏控制动画
   public AnimationClip idle;
   public AnimationClip jump;
   public AnimationClip runForward;
+  public AnimationClip walkForward;
   public AnimationClip runBackward;
   public AnimationClip runRight;
   public AnimationClip runleft;
@@ -23,6 +24,10 @@ public class Anim//游戏控制动画
 
 public class KnightMove : MonoBehaviour
 {
+
+  public SimpleTouchController leftController;
+  public SimpleTouchController rightController;
+
   public float h = 0.0f;
   public float v = 0.0f;
   //分配变量,
@@ -31,7 +36,7 @@ public class KnightMove : MonoBehaviour
   public float movespeed = 0.1f;
 
   // 跳跃速度变量
-  public float jumpspeed = 10.0f;
+  public float jumpspeed = 150.0f;
   private bool isJumpFlag = false;
   public float jumpMargin = 1f;
   //旋转可使用Rotate函数，
@@ -64,13 +69,21 @@ public class KnightMove : MonoBehaviour
     }
   }
 
+  private void stopFight()
+  {
+    attackClick.isFight = false;
+    // Debug.Log("打完了");
+  }
+
   // Update is called once per frame
   void Update()
   {
 
 
-    h = Input.GetAxis("Horizontal");
-    v = Input.GetAxis("Vertical");
+    // h = Input.GetAxis("Horizontal");
+    h = leftController.GetTouchPosition.x;
+    // v = Input.GetAxis("Vertical");
+    v = leftController.GetTouchPosition.y;
 
 
     // Debug.Log("H=" + h.ToString());
@@ -85,13 +98,15 @@ public class KnightMove : MonoBehaviour
 
 
     //vector3.up轴为基准，以rotspeed速度旋转
-    tr.Rotate(Vector3.up * Time.deltaTime * rotSpeed * Input.GetAxis("Mouse X"));
+    // tr.Rotate(Vector3.up * Time.deltaTime * rotSpeed * Input.GetAxis("Mouse X"));
+    tr.Rotate(Vector3.up * Time.deltaTime * rotSpeed * leftController.GetTouchPosition.x);
 
 
 
     //以键盘输入值为基准，执行要操作的动画
 
-    if (v >= 0.1f)
+    // if (v >= 0.1f)
+    if (v > 0f)
     {
       //前进动画
       if (isJumpFlag)
@@ -100,10 +115,18 @@ public class KnightMove : MonoBehaviour
       }
       else
       {
-        _animation.CrossFade(anim.runForward.name, 0.3f);
+        if (v > 0.5f)
+        {
+          _animation.CrossFade(anim.runForward.name, 0.3f);
+        }
+        else
+        {
+          _animation.CrossFade(anim.walkForward.name, 0.3f);
+        }
       }
     }
-    else if (v <= -0.1f)
+    // else if (v <= -0.1f)
+    else if (v < 0f)
     {
       //back animation
       if (isJumpFlag)
@@ -112,10 +135,19 @@ public class KnightMove : MonoBehaviour
       }
       else
       {
-        _animation.CrossFade(anim.runBackward.name, 0.3f);
+        if (v > -0.5f)
+        {
+          _animation.CrossFade(anim.runBackward.name, 0.3f);
+
+        }
+        else
+        {
+          _animation.CrossFade(anim.walkForward.name, 0.3f);
+        }
       }
     }
-    else if (h >= 0.1f)
+    // else if (h >= 0.1f)
+    else if (h > 0f)
     {
       //right animation
       if (isJumpFlag)
@@ -124,10 +156,18 @@ public class KnightMove : MonoBehaviour
       }
       else
       {
-        _animation.CrossFade(anim.runRight.name, 0.3f);
+        if (h > 0.5f)
+        {
+          _animation.CrossFade(anim.runRight.name, 0.3f);
+        }
+        else
+        {
+          _animation.CrossFade(anim.walkForward.name, 0.3f);
+        }
       }
     }
-    else if (h <= -0.1f)
+    // else if (h <= -0.1f)
+    else if (h < 0f)
     {
       //left animation 
       if (isJumpFlag)
@@ -136,7 +176,14 @@ public class KnightMove : MonoBehaviour
       }
       else
       {
-        _animation.CrossFade(anim.runleft.name, 0.3f);
+        if (h > -0.5f)
+        {
+          _animation.CrossFade(anim.runleft.name, 0.3f);
+        }
+        else
+        {
+          _animation.CrossFade(anim.walkForward.name, 0.3f);
+        }
       }
     }
     else
@@ -147,7 +194,8 @@ public class KnightMove : MonoBehaviour
 
 
 
-    if (Input.GetKey(KeyCode.Space))
+    // if (Input.GetKey(KeyCode.Space))
+    if (jumpClick.isJump)
     {
       if (!isJumpFlag)
       {
@@ -156,14 +204,18 @@ public class KnightMove : MonoBehaviour
           this.gameObject.AddComponent<Rigidbody>();
         }
         isJumpFlag = true;
+        jumpClick.isJump = false;
         this.gameObject.GetComponent<Rigidbody>().AddForce(Vector3.up * jumpspeed * Time.deltaTime, ForceMode.VelocityChange);
       }
     }
 
 
-    if (Input.GetKey(KeyCode.J) || Input.GetMouseButton(0))
+    // if (Input.GetKey(KeyCode.J) || Input.GetMouseButton(0))
+    // if (Input.GetKey(KeyCode.J))
+    if (attackClick.isFight)
     {
-      _animation.CrossFade(anim.attackStrength.name, 0.3f);
+      Invoke("stopFight", 0.3f);
+      _animation.Play(anim.attackStrength.name);
     }
 
     if (Input.GetKey(KeyCode.K))
@@ -171,7 +223,8 @@ public class KnightMove : MonoBehaviour
       _animation.CrossFade(anim.attackQuick.name, 0.3f);
     }
 
-    if (Input.GetKey(KeyCode.L) || Input.GetMouseButton(1))
+    // if (Input.GetKey(KeyCode.L) || Input.GetMouseButton(1))
+    if (Input.GetKey(KeyCode.L))
     {
       _animation.CrossFade(anim.defend.name, 0.3f);
     }
