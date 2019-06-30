@@ -4,6 +4,8 @@ using System.Collections.Generic;
 public class MoveAction : MonoBehaviour
 {
   public int speed = 2;
+  public int moveMethod = 0;
+
   Vector3 targetObject;
   // Start is called before the first frame update
   void Start()
@@ -18,17 +20,61 @@ public class MoveAction : MonoBehaviour
   void Update()
   {
     // 持续更新     
-    if (Input.GetKey(KeyCode.M))
+    // if (Input.GetKey(KeyCode.M))
+    // {
+    //   MoveToTargetPosition(targetObject, 2);
+    // }
+    switch (moveMethod)
     {
-      MoveToTargetPosition(targetObject, 3);
+      case 1:
+        MoveWithRigid();
+        break;
+      case 2:
+        MoveWithTranslate();
+        break;
     }
 
-    MoveWithRigid();
   }
 
   private void OnDestroy()
   {
     print("destroy");
+  }
+
+  /// <summary> 函数作用
+  /// 函数作用解析
+  /// </summary>
+  /// <param name="x">参数</param>
+  /// <returns></returns>
+  public void MoveWithTranslate(float speed = 2)
+  {
+    float moveSpeed = speed * Time.deltaTime;
+
+    // 前
+    if (Input.GetKey(KeyCode.W))
+    {
+      this.transform.Translate(Vector3.forward * moveSpeed);
+    }
+    // 后
+    if (Input.GetKey(KeyCode.S))
+    {
+      this.transform.Translate(Vector3.back * moveSpeed);
+    }
+    // 左
+    if (Input.GetKey(KeyCode.A))
+    {
+      this.transform.Translate(Vector3.left * moveSpeed);
+    }
+    // 右
+    if (Input.GetKey(KeyCode.D))
+    {
+      this.transform.Translate(Vector3.right * moveSpeed);
+    }
+    // 上
+    if (Input.GetKey(KeyCode.Q))
+    {
+      this.transform.Translate(Vector3.up * moveSpeed);
+    }
   }
 
   /// <summary> 函数作用解析：使用物体力移动物体
@@ -93,36 +139,37 @@ public class MoveAction : MonoBehaviour
   /// <param name="moveMethod">移动方式</param>
   /// <param name="speed">速度</param>
   /// </summary>
-  public void MoveToTargetPosition(Vector3 targetPos, int moveMethod = 0, float speed = 2)
-  {
-    float moveSpeed = speed * Time.deltaTime;
-    if (targetPos != null && speed > 0)
-    {
-      switch (moveMethod)
-      {
-        case 0:
-          this.transform.localPosition = Vector3.MoveTowards(this.transform.localPosition, targetPos, moveSpeed);
-          break;
-        case 1:
-          this.transform.localPosition = new Vector3(Mathf.Lerp(this.transform.localPosition.x, targetPos.x, moveSpeed), Mathf.Lerp(this.transform.localPosition.y, targetPos.y, moveSpeed), Mathf.Lerp(this.transform.localPosition.z, targetPos.z, moveSpeed));
-          break;
-        case 2:
-          this.transform.Translate(Vector3.forward * moveSpeed);
-          this.transform.Translate(Vector3.right * moveSpeed);
-          break;
-        case 3:
-          if (this.gameObject.GetComponent<Rigidbody>() == null)
-          {
-            this.gameObject.AddComponent<Rigidbody>();
-          }
-          this.gameObject.GetComponent<Rigidbody>().AddForce(Vector3.forward * moveSpeed, ForceMode.Impulse);
-          break;
-        default:
-          this.transform.localPosition = Vector3.MoveTowards(this.transform.localPosition, targetPos, moveSpeed);
-          break;
-      }
-    }
+  // public void MoveToTargetPosition(Vector3 targetPos, int moveMethod = 0, float speed = 2)
+  // {
+  //   float moveSpeed = speed * Time.deltaTime;
+  //   if (targetPos != null && speed > 0)
+  //   {
+  //     switch (moveMethod)
+  //     {
+  //       case 0:
+  //         this.transform.localPosition = Vector3.MoveTowards(this.transform.localPosition, targetPos, moveSpeed);
+  //         break;
+  //       case 1:
+  //         this.transform.localPosition = new Vector3(Mathf.Lerp(this.transform.localPosition.x, targetPos.x, moveSpeed), Mathf.Lerp(this.transform.localPosition.y, targetPos.y, moveSpeed), Mathf.Lerp(this.transform.localPosition.z, targetPos.z, moveSpeed));
+  //         break;
+  //       case 2:
+  //         this.transform.Translate(Vector3.forward * moveSpeed);
+  //         this.transform.Translate(Vector3.right * moveSpeed);
+  //         break;
+  //       case 3:
+  //         if (this.gameObject.GetComponent<Rigidbody>() == null)
+  //         {
+  //           this.gameObject.AddComponent<Rigidbody>();
+  //         }
+  //         this.gameObject.GetComponent<Rigidbody>().AddForce(Vector3.forward * moveSpeed, ForceMode.Impulse);
+  //         break;
+  //       default:
+  //         this.transform.localPosition = Vector3.MoveTowards(this.transform.localPosition, targetPos, moveSpeed);
+  //         break;
+  //     }
+  //   }
 
-  }
+  // }
+
 }
 
